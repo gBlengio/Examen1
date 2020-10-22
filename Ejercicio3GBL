@@ -1,0 +1,73 @@
+#include "p16F628a.inc"    ;incluir librerias relacionadas con el dispositivo
+ __CONFIG _FOSC_INTOSCCLK & _WDTE_OFF & _PWRTE_OFF & _MCLRE_OFF & _BOREN_OFF & _LVP_OFF & _CPD_OFF & _CP_OFF
+
+
+RES_VECT  CODE    0x0000            ; processor reset vector
+    GOTO    START                 
+MAIN_PROG CODE                     
+
+i equ 0x30
+j equ 0x31
+k equ 0x32
+
+START              
+
+
+    MOVLW 0x07         
+    MOVWF CMCON
+    BCF STATUS, RP1    
+    BSF STATUS, RP0    
+    MOVLW b'00000010'  
+    MOVWF TRISB 
+    BCF STATUS, RP0   
+
+INICIO
+
+    BTFSC PORTB,1
+    call sec
+    call sec2
+    GOTO INICIO
+
+sec
+    BSF PORTB,0
+    call delay
+    BCF PORTB,0
+    call delay
+    return
+
+sec2
+    BCF PORTB,0
+    call delay
+    BSF PORTB,0
+    call delay
+    return
+
+delay
+    MOVLW d'54'
+    MOVWF i
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+  loopj: MOVLW d'68' 
+    MOVWF j
+      nop
+      nop
+      nop
+      nop
+      nop
+      nop
+      nop
+  loopk: MOVLW d'44'
+    MOVWF k
+    DECFSZ k
+    GOTO $-1
+    DECFSZ j
+    GOTO loopk
+    DECFSZ i
+    GOTO loopj
+    return
+
+END
